@@ -1,7 +1,7 @@
 import pytest
 import json
 
-from .utils import add_todo, get_todo_json, login, create_client
+from .utils import add_todo, get_todo_json, get_todos, login, create_client
 
 @pytest.fixture
 def client():
@@ -23,6 +23,7 @@ def test_success(client):
     login(client)
     add_response = add_todo(client, 'todo added by test')
     get_todo_response = get_todo_json(client, 9)
+    get_todos_response = get_todos(client)
 
     todo = json.loads(get_todo_response.data.decode('utf-8'))
 
@@ -36,3 +37,4 @@ def test_success(client):
     assert 'Location: http://localhost/todo' in str(add_response.headers)
     assert add_response.status_code == 302
     assert todo == expected_todo
+    assert b'Item created.' in get_todos_response.data

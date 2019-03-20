@@ -1,6 +1,7 @@
 from alayatodo import app
 from flask import (
     abort,
+    flash,
     g,
     jsonify,
     make_response,
@@ -94,6 +95,9 @@ def todos_POST():
         % (session['user']['id'], description)
     )
     g.db.commit()
+
+    flash('Item created.')
+
     return redirect('/todo')
 
 
@@ -114,6 +118,16 @@ def todo_completed(id, completed):
 def todo_delete(id):
     if not session.get('logged_in'):
         return redirect('/login')
-    g.db.execute("DELETE FROM todos WHERE id ='%s'" % id)
+
+    cursor = g.db.cursor()
+    cursor.execute(
+        "DELETE FROM todos WHERE user_id = %d and id = %d"
+        % (session['user']['id'], int(id))
+    )
     g.db.commit()
+    if cursor.rowcount == 0:
+        abort(404)
+
+    flash('Item deleted.')
+
     return redirect('/todo')
