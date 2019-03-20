@@ -1,6 +1,8 @@
 from alayatodo import app
 from flask import (
+    abort,
     g,
+    jsonify,
     make_response,
     redirect,
     render_template,
@@ -50,6 +52,21 @@ def todo(id):
     todo = cur.fetchone()
     return render_template('todo.html', todo=todo)
 
+@app.route('/todo/<id>/json', methods=['GET'])
+def todo_json(id):
+    if not session.get('logged_in'):
+        return redirect('/login')
+
+    cur = g.db.execute(
+        "SELECT * FROM todos WHERE id = %d and user_id = %d" \
+        % (int(id), int(session['user']['id']))
+    )
+    todo = cur.fetchone()
+
+    if not todo:
+        abort(404)
+
+    return jsonify(dict(todo))
 
 @app.route('/todo', methods=['GET'])
 @app.route('/todo/', methods=['GET'])

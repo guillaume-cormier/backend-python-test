@@ -19,6 +19,10 @@ def add_todo(client, description):
 def get_todos(client):
     return client.get('/todo/', follow_redirects=False)
 
+def get_todo_json(client, todo_id):
+    path = '/todo/%d/json' % todo_id
+    return client.get(path, follow_redirects=False)
+
 def login(client, username='user1', password='user1'):
     return client.post('/login', data=dict(
         username=username,
