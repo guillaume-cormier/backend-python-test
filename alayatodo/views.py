@@ -49,8 +49,18 @@ def logout():
 
 @app.route('/todo/<id>', methods=['GET'])
 def todo(id):
-    cur = g.db.execute("SELECT * FROM todos WHERE id ='%s'" % id)
+    if not session.get('logged_in'):
+        return redirect('/login')
+
+    cur = g.db.execute(
+        "SELECT * FROM todos WHERE id = %d and user_id = %d" \
+        % (int(id), session['user']['id'])
+    )
     todo = cur.fetchone()
+
+    if not todo:
+        abort(404)
+
     return render_template('todo.html', todo=todo)
 
 @app.route('/todo/<id>/json', methods=['GET'])
@@ -60,7 +70,7 @@ def todo_json(id):
 
     cur = g.db.execute(
         "SELECT * FROM todos WHERE id = %d and user_id = %d" \
-        % (int(id), int(session['user']['id']))
+        % (int(id), session['user']['id'])
     )
     todo = cur.fetchone()
 
@@ -74,7 +84,7 @@ def todo_json(id):
 def todos():
     if not session.get('logged_in'):
         return redirect('/login')
-    cur = g.db.execute("SELECT * FROM todos")
+    cur = g.db.execute("SELECT * FROM todos WHERE user_id = %d" % session['user']['id'])
     todos = cur.fetchall()
     return render_template('todos.html', todos=todos)
 
@@ -108,7 +118,7 @@ def todo_completed(id, completed):
 
     g.db.execute(
         "UPDATE todos SET completed = %d WHERE user_id = %d and id = %d"
-        % (int(completed), int(session['user']['id']), int(id))
+        % (int(completed), session['user']['id'], int(id))
     )
     g.db.commit()
     return redirect('/todo')
