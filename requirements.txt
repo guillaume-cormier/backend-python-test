@@ -1,4 +1,5 @@
 Flask
+Flask-Sqlalchemy
 Jinja2
 docopt
 pytest

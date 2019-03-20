@@ -1,9 +1,10 @@
 from alayatodo import app
 from main import init_db
 
+
 def create_client():
     app.config['TESTING'] = True
-    app.config['DATABASE'] = '/tmp/alayatodo-test.db'
+    app.config['SQL_ALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/alayatodo-test.db'
     client = app.test_client()
 
     with app.app_context():
