@@ -1,19 +1,10 @@
 import pytest
 
-from alayatodo import app
-from main import init_db
-from .utils import add_todo, get_todos, login
+from .utils import add_todo, get_todos, login, create_client
 
 @pytest.fixture
 def client():
-    app.config['TESTING'] = True
-    app.config['DATABASE'] = '/tmp/alayatodo-test.db'
-    client = app.test_client()
-
-    with app.app_context():
-        init_db()
-
-    yield client
+    return create_client()
 
 def test_not_logged_in(client):
     response = add_todo(client, 'description')

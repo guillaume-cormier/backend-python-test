@@ -1,3 +1,16 @@
+from alayatodo import app
+from main import init_db
+
+def create_client():
+    app.config['TESTING'] = True
+    app.config['DATABASE'] = '/tmp/alayatodo-test.db'
+    client = app.test_client()
+
+    with app.app_context():
+        init_db()
+
+    return client
+
 def add_todo(client, description):
     return client.post('/todo/', data=dict(
         description=description,
