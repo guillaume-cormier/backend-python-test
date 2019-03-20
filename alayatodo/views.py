@@ -44,7 +44,7 @@ def login_POST():
     if not user:
         return redirect('/login')
 
-    if password != user.password:
+    if not user.is_valid_password(password):
         return redirect('/login')
 
     if not id:

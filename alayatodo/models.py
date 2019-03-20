@@ -1,4 +1,5 @@
 from alayatodo import db
+from passlib.hash import bcrypt
 
 
 class Todos(db.Model):
@@ -25,3 +26,6 @@ class Users(db.Model):
             'id': self.id,
             'username': self.username,
         }
+
+    def is_valid_password(self, password):
+        return bcrypt.verify(password, self.password)
