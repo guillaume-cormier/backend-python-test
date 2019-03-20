@@ -11,6 +11,16 @@ from flask import (
     session,
     url_for,
 )
+from functools import wraps
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('logged_in'):
+            return redirect('/login')
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @app.route('/')
@@ -53,10 +63,8 @@ def logout():
 
 
 @app.route('/todo/<id>', methods=['GET'])
+@login_required
 def todo(id):
-    if not session.get('logged_in'):
-        return redirect('/login')
-
     todo = Todos.query.filter_by(user_id=session['user']['id'], id=id).first()
 
     if not todo:
@@ -65,10 +73,8 @@ def todo(id):
     return render_template('todo.html', todo=todo)
 
 @app.route('/todo/<id>/json', methods=['GET'])
+@login_required
 def todo_json(id):
-    if not session.get('logged_in'):
-        return redirect('/login')
-
     todo = Todos.query.filter_by(user_id=session['user']['id'], id=id).first()
 
     if not todo:
@@ -78,10 +84,8 @@ def todo_json(id):
 
 @app.route('/todo', methods=['GET'])
 @app.route('/todo/', methods=['GET'])
+@login_required
 def todos():
-    if not session.get('logged_in'):
-        return redirect('/login')
-
     page = request.args.get('page', 1, type=int)
     todos = Todos.query.filter_by(user_id=session['user']['id']).paginate(page, 5, False)
 
@@ -93,10 +97,8 @@ def todos():
 
 @app.route('/todo', methods=['POST'])
 @app.route('/todo/', methods=['POST'])
+@login_required
 def todos_POST():
-    if not session.get('logged_in'):
-        return redirect('/login')
-
     description = request.form.get('description')
 
     if not description:
@@ -111,10 +113,8 @@ def todos_POST():
 
 
 @app.route('/todo/<id>/completed/<completed>', methods=['POST'])
+@login_required
 def todo_completed(id, completed):
-    if not session.get('logged_in'):
-        return redirect('/login')
-
     updated = db.session.query(Todos)\
         .filter_by(
             user_id=session['user']['id'],
@@ -129,10 +129,8 @@ def todo_completed(id, completed):
 
 
 @app.route('/todo/<id>', methods=['POST'])
+@login_required
 def todo_delete(id):
-    if not session.get('logged_in'):
-        return redirect('/login')
-
     deleted = db.session.query(Todos)\
         .filter_by(
             user_id=session['user']['id'],
