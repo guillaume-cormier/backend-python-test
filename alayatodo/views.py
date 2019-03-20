@@ -8,8 +8,9 @@ from flask import (
     redirect,
     render_template,
     request,
-    session
-    )
+    session,
+    url_for,
+)
 
 
 @app.route('/')
@@ -81,9 +82,13 @@ def todos():
     if not session.get('logged_in'):
         return redirect('/login')
 
-    todos = Todos.query.filter_by(user_id=session['user']['id']).all()
+    page = request.args.get('page', 1, type=int)
+    todos = Todos.query.filter_by(user_id=session['user']['id']).paginate(page, 5, False)
 
-    return render_template('todos.html', todos=todos)
+    next_url = url_for('todos', page=todos.next_num) if todos.has_next else None
+    prev_url = url_for('todos', page=todos.prev_num) if todos.has_prev else None
+
+    return render_template('todos.html', todos=todos.items, next_url=next_url, prev_url=prev_url)
 
 
 @app.route('/todo', methods=['POST'])

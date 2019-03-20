@@ -28,7 +28,7 @@
         {% endfor %}
         <tr>
             <form method="post" action="{{ url_for('todos_POST') }}">
-                <td colspan="3">
+                <td colspan="4">
                     <input type="textbox" name="description" class="small-6 small-center" placeholder="Description..." required>
                 </td>
                 <td>
@@ -37,5 +37,11 @@
             </form>
         </tr>
     </table>
+    {% if prev_url %}
+        <a href="{{ prev_url }}">Previous page</a>
+    {% endif %}
+    {% if next_url %}
+        <a href="{{ next_url }}">Next page</a>
+    {% endif %}
 </div>
 {% endblock %}

@@ -17,8 +17,9 @@ def add_todo(client, description):
         description=description,
     ), follow_redirects=False)
 
-def get_todos(client):
-    return client.get('/todo/', follow_redirects=False)
+def get_todos(client, page=1):
+    path = '/todo/?page=%d' % page
+    return client.get(path, follow_redirects=False)
 
 def get_todo_json(client, todo_id):
     path = '/todo/%d/json' % todo_id
