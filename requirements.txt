@@ -1,5 +1,6 @@
 Flask
 Flask-Sqlalchemy
+Flask-wtf
 Jinja2
 docopt
 pytest

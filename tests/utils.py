@@ -5,6 +5,7 @@ from main import init_db
 def create_client():
     app.config['TESTING'] = True
     app.config['SQL_ALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/alayatodo-test.db'
+    app.config['WTF_CSRF_ENABLED'] = False
     client = app.test_client()
 
     with app.app_context():
